@@ -69,7 +69,7 @@ public class booksCatalog {
 
       List<Publishers> publishers = new ArrayList<Publishers>();
 
-
+      System.out.println();
       List<Books> books = new ArrayList<Books>();
       List<ad_hoc_teams> ad_hoc_teams = new ArrayList<ad_hoc_teams>();
 
