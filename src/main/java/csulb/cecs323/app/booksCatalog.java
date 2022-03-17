@@ -13,14 +13,13 @@
 package csulb.cecs323.app;
 
 // Import all of the entity classes that we have written for this application.
-import csulb.cecs323.model.Books;
-import csulb.cecs323.model.Publishers;
-import csulb.cecs323.model.ad_hoc_teams;
+import csulb.cecs323.model.*;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
+import javax.swing.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
@@ -68,10 +67,31 @@ public class booksCatalog {
       booksCatalog booksCatalog= new booksCatalog(manager);
 
       List<Publishers> publishers = new ArrayList<Publishers>();
-
-      System.out.println();
       List<Books> books = new ArrayList<Books>();
+      List<writing_groups> writing_groups = new ArrayList<writing_groups>();
+      List<individual_authors> individual_authors = new ArrayList<individual_authors>();
       List<ad_hoc_teams> ad_hoc_teams = new ArrayList<ad_hoc_teams>();
+
+      //String email, String name, String head_writer, Integer year_formed
+      writing_groups.add(new writing_groups("proudlywritters@writters.com","Proudly Wrtters","Alan James",1980));
+      writing_groups.add(new writing_groups("storytellers@writters.com","Storytellers","Emma Joe",1978));
+      writing_groups.add(new writing_groups("Penmaniacs@writters.com","Penmaniacs","Emerson Fabio",2000));
+
+      individual_authors.add(new individual_authors("agathachristie@hotmail.com", "Agatha Christie",null ));
+      individual_authors.add(new individual_authors("julesverne@hotmail.com","Jules Verne",null));
+      individual_authors.add(new individual_authors("enidblyton@gmail.com","Enid Blyton",null));
+
+      ad_hoc_teams.add(new ad_hoc_teams("justicefortheinnocents@adhocteams.com","Justice For The Innocents",null));
+      ad_hoc_teams.add(new ad_hoc_teams("abetterecosystem@adhocteams.com","A Better Ecosystem",null));
+      ad_hoc_teams.add(new ad_hoc_teams("stationone@adhocteams.com", "Station One", null));
+      // publishers.add(publishersForm());
+
+      ad_hoc_teams.get(0).setIndividual_authors(booksCatalog.getEmail("Jules Verne"));
+
+
+      //String isbn = JOptionPane.showInputDialog("ISBN: ");
+      //String title = JOptionPane.showInputDialog("Publisher Email: ");
+      //String year_published = JOptionPane.showInputDialog("Publisher Phone Number: ");
 
       // Any changes to the database need to be done within a transaction.
       // See: https://en.wikibooks.org/wiki/Java_Persistence/Transactions
@@ -80,6 +100,10 @@ public class booksCatalog {
       EntityTransaction tx = manager.getTransaction();
 
       tx.begin();
+
+      booksCatalog.createEntity(writing_groups);
+      booksCatalog.createEntity(individual_authors);
+      booksCatalog.createEntity(ad_hoc_teams);
 
       tx.commit();
       LOGGER.fine("End of Transaction");
@@ -116,19 +140,31 @@ public class booksCatalog {
     * same name, as the string that you pass in.  To create a new Cars instance, you need to pass
     * in an instance of auto_body_styles to satisfy the foreign key constraint, not just a string
     * representing the name of the style.
-    * @param name       The name of the autobody style that you are looking for.
+    * @paramname       The name of the autobody style that you are looking for.
     * @return           The auto_body_styles instance corresponding to that style name.
     */
-   /*public auto_body_styles getStyle (String name) {
+   public List<individual_authors> getEmail (String name) {
       // Run the native query that we defined in the auto_body_styles entity to find the right style.
-      List<auto_body_styles> styles = this.entityManager.createNamedQuery("ReturnAutoBodyStyle",
-              auto_body_styles.class).setParameter(1, name).getResultList();
-      if (styles.size() == 0) {
+      List<individual_authors> authors = this.entityManager.createNamedQuery("ReturnIndividualAuthor",
+              individual_authors.class).setParameter(1, name).getResultList();
+      if (authors.size() == 0) {
          // Invalid style name passed in.
          return null;
       } else {
-         // Return the style object that they asked for.
-         return styles.get(0);
+         // Return the individual_author object that they asked for.
+         return (List<individual_authors>) authors.get(0);
       }
-   }*/// End of the getStyle method
+   }
+   /// End of the getStyle method
+
+   public static Publishers publishersForm(){
+      String name = JOptionPane.showInputDialog("Publisher Name: ");
+      String email = JOptionPane.showInputDialog("Publisher Email: ");
+      String phone = JOptionPane.showInputDialog("Publisher Phone Number: ");
+
+      Publishers publisher = new Publishers(name,email,phone);
+      return publisher;
+   }
+
+
 } // End of booksCatalog class

@@ -3,9 +3,17 @@ package csulb.cecs323.model;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.ManyToMany;
+import javax.persistence.NamedNativeQuery;
 import java.util.List;
 
 @Entity
+@NamedNativeQuery(
+        name="ReturnIndividualAuthor",
+        query = "SELECT * " +
+                "FROM   authoring_entities " +
+                "WHERE  authoring_entity_type = 'individual_authors' and name = ? ",
+        resultClass = individual_authors.class
+)
 @DiscriminatorValue(value = "INDIVIDUAL_AUTHORS")
 public class individual_authors extends authoring_entities{
 
