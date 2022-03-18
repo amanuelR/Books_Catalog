@@ -72,21 +72,33 @@ public class booksCatalog {
       List<individual_authors> individual_authors = new ArrayList<individual_authors>();
       List<ad_hoc_teams> ad_hoc_teams = new ArrayList<ad_hoc_teams>();
 
+      //add writing_groups objects
       //String email, String name, String head_writer, Integer year_formed
       writing_groups.add(new writing_groups("proudlywritters@writters.com","Proudly Wrtters","Alan James",1980));
       writing_groups.add(new writing_groups("storytellers@writters.com","Storytellers","Emma Joe",1978));
       writing_groups.add(new writing_groups("Penmaniacs@writters.com","Penmaniacs","Emerson Fabio",2000));
 
+      //add individual_authors objects
       individual_authors.add(new individual_authors("agathachristie@hotmail.com", "Agatha Christie",null ));
       individual_authors.add(new individual_authors("julesverne@hotmail.com","Jules Verne",null));
       individual_authors.add(new individual_authors("enidblyton@gmail.com","Enid Blyton",null));
 
+      //add ad_hoc_teams objects
       ad_hoc_teams.add(new ad_hoc_teams("justicefortheinnocents@adhocteams.com","Justice For The Innocents",null));
       ad_hoc_teams.add(new ad_hoc_teams("abetterecosystem@adhocteams.com","A Better Ecosystem",null));
       ad_hoc_teams.add(new ad_hoc_teams("stationone@adhocteams.com", "Station One", null));
       // publishers.add(publishersForm());
 
-      ad_hoc_teams.get(0).setIndividual_authors(booksCatalog.getEmail("Jules Verne"));
+      //add publishers(String name, String email, String phone)
+
+      publishers.add(new Publishers("Penguin Random House","newaccount@penguinrandomhouse.com","866-761-6685"));
+      publishers.add(new Publishers("Hachette Book Group","hachette.books@hbgusa.com","800-759-0190"));
+      publishers.add(new Publishers("Simon & Schuster","cservice@simonandschuster.co.in","800-223-2336"));
+
+      //add Books(String ISBN, String title, Integer year_published, Publishers publishers, authoring_entities authoring_entities)
+      books.add(new Books("0-3403-6000-3", "The Future of Cryptocurrency", 2016,booksCatalog.getName("Hachette Book Group"),));
+      books.add(new Books("0-5362-5597-0", "The ultimate AI", 2011,booksCatalog.getName("Penguin Random House"),));
+      books.add(new Books("0-6093-8620-4", "Why Do You Code",2007,booksCatalog.getName("Simon & Schuster"),));
 
 
       //String isbn = JOptionPane.showInputDialog("ISBN: ");
@@ -105,13 +117,18 @@ public class booksCatalog {
       booksCatalog.createEntity(individual_authors);
       booksCatalog.createEntity(ad_hoc_teams);
 
+
       tx.commit();
       LOGGER.fine("End of Transaction");
 
 
+      //add individual_authors to an existing ad_hoc_teams
+      ad_hoc_teams.get(0).add_individual_authors(individual_authors.get(0));
+      ad_hoc_teams.get(1).add_individual_authors(individual_authors.get(1));
 
-
-
+      tx.begin();
+      booksCatalog.createEntity(ad_hoc_teams);
+      tx.commit();
    } // End of the main method
 
    /**
@@ -143,27 +160,44 @@ public class booksCatalog {
     * @paramname       The name of the autobody style that you are looking for.
     * @return           The auto_body_styles instance corresponding to that style name.
     */
-   public List<individual_authors> getEmail (String name) {
-      // Run the native query that we defined in the auto_body_styles entity to find the right style.
+   public individual_authors getEmail (String name) {
+      // Run the native query that we defined in the individual_authors entity to find the right email.
       List<individual_authors> authors = this.entityManager.createNamedQuery("ReturnIndividualAuthor",
               individual_authors.class).setParameter(1, name).getResultList();
       if (authors.size() == 0) {
-         // Invalid style name passed in.
+         // Invalid author name passed in.
          return null;
       } else {
          // Return the individual_author object that they asked for.
-         return (List<individual_authors>) authors.get(0);
+         return authors.get(0);
       }
    }
    /// End of the getStyle method
 
-   public static Publishers publishersForm(){
-      String name = JOptionPane.showInputDialog("Publisher Name: ");
-      String email = JOptionPane.showInputDialog("Publisher Email: ");
-      String phone = JOptionPane.showInputDialog("Publisher Phone Number: ");
-
-      Publishers publisher = new Publishers(name,email,phone);
-      return publisher;
+   public Publishers getName(String name){
+      // Run the native query that we defined in the publisher entity to find the right style.
+      List<Publishers> publisher = this.entityManager.createNamedQuery("ReturnPublisher",
+              Publishers.class).setParameter(1, name).getResultList();
+      if (publisher.size() == 0) {
+         // Invalid publisher name passed in.
+         return null;
+      } else {
+         // Return the publisher object that they asked for.
+         return publisher.get(0);
+      }
+   }// End of the getName method
+   public authoring_entities getName(String name){
+      // Run the native query that we defined in the publisher entity to find the right style.
+      List<authoring_entities> authoring_entities = this.entityManager.createNamedQuery("ReturnAuthoringEntities",
+              Publishers.class).setParameter(1, name).getResultList();
+      if (publisher.size() == 0) {
+         // Invalid publisher name passed in.
+         return null;
+      } else {
+         // Return the publisher object that they asked for.
+         return publisher.get(0);
+      }
+   }// End of the getName method
    }
 
 

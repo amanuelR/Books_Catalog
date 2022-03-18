@@ -11,7 +11,7 @@ import java.util.List;
         name="ReturnIndividualAuthor",
         query = "SELECT * " +
                 "FROM   authoring_entities " +
-                "WHERE  authoring_entity_type = 'individual_authors' and name = ? ",
+                "WHERE  AuTHORING_ENTITY_TYPE = 'individual_authors' and name = ? ",
         resultClass = individual_authors.class
 )
 @DiscriminatorValue(value = "INDIVIDUAL_AUTHORS")
@@ -20,12 +20,7 @@ public class individual_authors extends authoring_entities{
     @ManyToMany(mappedBy = "individual_authors")
     List<ad_hoc_teams> ad_hock_teams;
 
-    public List<ad_hoc_teams> getAd_hock_teams() {
-        return ad_hock_teams;
-    }
-    public void setAd_hock_teams(List<ad_hoc_teams> ad_hock_teams) {
-        this.ad_hock_teams = ad_hock_teams;
-    }
+
     public individual_authors() {
         super();
     }

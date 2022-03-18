@@ -49,4 +49,12 @@ public abstract class authoring_entities {
         this.email = email;
         this.name = name;
     }
+
+    @Override
+    public String toString() {
+        return "authoring_entities{" +
+                "email='" + email + '\'' +
+                ", name='" + name + '\'' +
+                '}';
+    }
 }

@@ -3,8 +3,16 @@ package csulb.cecs323.model;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.NamedNativeQuery;
 
 @Entity
+@NamedNativeQuery(
+        name="ReturnPublisher",
+        query = "SELECT * " +
+                "FROM   PUBLISHERS " +
+                "WHERE  NAME = ? ",
+        resultClass = Publishers.class
+)
 public class Publishers {
     /** The full name of the publisher**/
     @Id
@@ -52,5 +60,14 @@ public class Publishers {
 
     public void setPhone(String phone) {
         this.phone = phone;
+    }
+
+    @Override
+    public String toString() {
+        return "Publishers{" +
+                "name='" + name + '\'' +
+                ", email='" + email + '\'' +
+                ", phone='" + phone + '\'' +
+                '}';
     }
 }

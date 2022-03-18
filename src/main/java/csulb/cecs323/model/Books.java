@@ -74,4 +74,15 @@ public class Books {
         this.publishers = publishers;
         this.authoring_entities = authoring_entities;
     }
+
+    @Override
+    public String toString() {
+        return "Books{" +
+                "ISBN='" + ISBN + '\'' +
+                ", title='" + title + '\'' +
+                ", year_published=" + year_published +
+                ", publishers=" + publishers +
+                ", authoring_entities=" + authoring_entities +
+                '}';
+    }
 }
