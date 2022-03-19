@@ -15,3 +15,6 @@ The other entities that are involved in this application are:
      Publishers
     
 We will be creating a main class that would perform different tasks based on the users input.
+
+<h3> UML Class Diagram </h3>
+(https://user-images.githubusercontent.com/92605110/159112913-ad8abd3f-2b02-49e2-86d4-3e7ec6fb83ee.png)
