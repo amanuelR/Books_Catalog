@@ -95,11 +95,6 @@ public class booksCatalog {
       publishers.add(new Publishers("Hachette Book Group","hachette.books@hbgusa.com","800-759-0190"));
       publishers.add(new Publishers("Simon & Schuster","cservice@simonandschuster.co.in","800-223-2336"));
 
-      //add Books(String ISBN, String title, Integer year_published, Publishers publishers, authoring_entities authoring_entities)
-      books.add(new Books("0-3403-6000-3", "The Future of Cryptocurrency", 2016,booksCatalog.getName("Hachette Book Group"),));
-      books.add(new Books("0-5362-5597-0", "The ultimate AI", 2011,booksCatalog.getName("Penguin Random House"),));
-      books.add(new Books("0-6093-8620-4", "Why Do You Code",2007,booksCatalog.getName("Simon & Schuster"),));
-
 
       //String isbn = JOptionPane.showInputDialog("ISBN: ");
       //String title = JOptionPane.showInputDialog("Publisher Email: ");
@@ -116,10 +111,16 @@ public class booksCatalog {
       booksCatalog.createEntity(writing_groups);
       booksCatalog.createEntity(individual_authors);
       booksCatalog.createEntity(ad_hoc_teams);
-
+      booksCatalog.createEntity(publishers);
 
       tx.commit();
       LOGGER.fine("End of Transaction");
+
+      //we need to add the books after the AUTHORING_ENTITIES and PUBLISHERS tables are populated
+      //add Books(String ISBN, String title, Integer year_published,  authoring_entities authoring_entities, Publishers publishers)
+      books.add(new Books("0-3403-6000-3", "The Future of Cryptocurrency", 2016,booksCatalog.getAuthoringEntitiesEmail("storytellers@writters.com"),booksCatalog.getName("Hachette Book Group")));
+      books.add(new Books("0-5362-5597-0", "The Ultimate AI", 2011,booksCatalog.getAuthoringEntitiesEmail("julesverne@hotmail.com"),booksCatalog.getName("Penguin Random House")));
+      books.add(new Books("0-6093-8620-4", "Why Do You Code",2007,booksCatalog.getAuthoringEntitiesEmail("justicefortheinnocents@adhocteams.com"),booksCatalog.getName("Simon & Schuster")));
 
 
       //add individual_authors to an existing ad_hoc_teams
@@ -128,6 +129,7 @@ public class booksCatalog {
 
       tx.begin();
       booksCatalog.createEntity(ad_hoc_teams);
+      booksCatalog.createEntity(books);
       tx.commit();
    } // End of the main method
 
@@ -178,6 +180,7 @@ public class booksCatalog {
       // Run the native query that we defined in the publisher entity to find the right style.
       List<Publishers> publisher = this.entityManager.createNamedQuery("ReturnPublisher",
               Publishers.class).setParameter(1, name).getResultList();
+      //publisher.get(0).toString();
       if (publisher.size() == 0) {
          // Invalid publisher name passed in.
          return null;
@@ -186,19 +189,26 @@ public class booksCatalog {
          return publisher.get(0);
       }
    }// End of the getName method
-   public authoring_entities getName(String name){
-      // Run the native query that we defined in the publisher entity to find the right style.
+
+   public authoring_entities getAuthoringEntitiesEmail(String email){
+      // Run the native query that we defined in the authoring_entities entity to find the right style.
       List<authoring_entities> authoring_entities = this.entityManager.createNamedQuery("ReturnAuthoringEntities",
-              Publishers.class).setParameter(1, name).getResultList();
-      if (publisher.size() == 0) {
-         // Invalid publisher name passed in.
+              authoring_entities.class).setParameter(1, email).getResultList();
+      if (authoring_entities.size() == 0) {
+         // Invalid  authoring_entities email passed in.
          return null;
       } else {
-         // Return the publisher object that they asked for.
-         return publisher.get(0);
+         // Return the  authoring_entities object that they asked for.
+         return authoring_entities.get(0);
       }
-   }// End of the getName method
+   }// End of the getAuthoringEntitiesEmail method
+
+   public void addBook(String ISBN, String title, Integer year_published,  authoring_entities authoring_entities, Publishers publishers){
+      ISBN = JOptionPane.showInputDialog("ISBN: ");
+      title = JOptionPane.showInputDialog("Title: ");
+      year_published = Integer.valueOf(JOptionPane.showInputDialog("Year Published: "));
+
    }
+   public void addPublisher(){}
 
-
-} // End of booksCatalog class
+}// End of booksCatalog class

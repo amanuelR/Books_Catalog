@@ -1,13 +1,6 @@
 package csulb.cecs323.model;
 
-import javax.persistence.DiscriminatorColumn;
-import javax.persistence.Entity;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
-import javax.persistence.DiscriminatorType;
-import javax.persistence.Table;
-import javax.persistence.Id;
-import javax.persistence.Column;
+import javax.persistence.*;
 
 
 @Entity
@@ -17,6 +10,13 @@ import javax.persistence.Column;
         discriminatorType = DiscriminatorType.STRING
 )
 @Table(name = "AUTHORING_ENTITIES")
+@NamedNativeQuery(
+        name="ReturnAuthoringEntities",
+        query = "SELECT * " +
+                "FROM   AUTHORING_ENTITIES " +
+                "WHERE  EMAIL = ? ",
+        resultClass = authoring_entities.class
+)
 public abstract class authoring_entities {
 
     @Id
