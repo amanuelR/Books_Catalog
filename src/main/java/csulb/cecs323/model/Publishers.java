@@ -13,6 +13,26 @@ import javax.persistence.NamedNativeQuery;
                 "WHERE  name = ? ",
         resultClass = Publishers.class
 )
+@NamedNativeQuery(
+        name="ReturnPublisherEmail",
+        query = "SELECT * " +
+                "FROM   PUBLISHERS " +
+                "WHERE  email = ? ",
+        resultClass = Publishers.class
+)
+@NamedNativeQuery(
+        name="ReturnPublisherPhone",
+        query = "SELECT * " +
+                "FROM   PUBLISHERS " +
+                "WHERE  phone = ? ",
+        resultClass = Publishers.class
+)
+@NamedNativeQuery(
+        name="ReturnPublishersName",
+        query = "SELECT NAME " +
+                "FROM   PUBLISHERS ",
+        resultClass = Publishers.class
+)
 public class Publishers {
     /** The full name of the publisher**/
     @Id

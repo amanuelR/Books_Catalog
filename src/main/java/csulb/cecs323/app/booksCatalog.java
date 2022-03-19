@@ -131,6 +131,47 @@ public class booksCatalog {
       booksCatalog.createEntity(ad_hoc_teams);
       booksCatalog.createEntity(books);
       tx.commit();
+
+      String menu = booksCatalog.showMenu();
+      switch (menu){
+         case "Add Publisher":
+            booksCatalog.createEntity((List<Publishers>) booksCatalog.addPublisher());
+            break;
+         case "Add Book":
+            booksCatalog.createEntity((List<Books>) booksCatalog.addBook());
+            break;
+         case "Update a Book":
+
+            break;
+         case "Delete Book":
+            break;
+         case "Add Writing Group":
+            break;
+         case "Add Individual Author":
+            break;
+         case "Add Ad Hoc Team":
+            break;
+         case "Add an Individual Author to an existing Ad Hoc Team":
+            break;
+         case "Show Information About a Publisher":
+            break;
+         case "Show Information About a Book":
+            break;
+         case "Show Information About a Writing Group":
+            break;
+         case "Show Information About an Individual Author":
+            break;
+         case "Show Information About an Ad Hoc Team":
+            break;
+         case "List Primary Keys of Book":
+            break;
+         case "List Primary Keys of Publishers":
+            break;
+         case "List Primary Keys of Authoring Entities":
+            break;
+
+      }
+
    } // End of the main method
 
    /**
@@ -162,7 +203,7 @@ public class booksCatalog {
     * @paramname       The name of the autobody style that you are looking for.
     * @return           The auto_body_styles instance corresponding to that style name.
     */
-   public individual_authors getEmail (String name) {
+  /* public individual_authors getEmail (String name) {
       // Run the native query that we defined in the individual_authors entity to find the right email.
       List<individual_authors> authors = this.entityManager.createNamedQuery("ReturnIndividualAuthor",
               individual_authors.class).setParameter(1, name).getResultList();
@@ -173,7 +214,7 @@ public class booksCatalog {
          // Return the individual_author object that they asked for.
          return authors.get(0);
       }
-   }
+   }*/
    /// End of the getStyle method
 
    public Publishers getName(String name){
@@ -189,6 +230,33 @@ public class booksCatalog {
          return publisher.get(0);
       }
    }// End of the getName method
+   public Publishers getEmail(String email){
+      // Run the native query that we defined in the publisher entity to find the right style.
+      List<Publishers> publisher = this.entityManager.createNamedQuery("ReturnPublisherEmail",
+              Publishers.class).setParameter(1, email).getResultList();
+      //publisher.get(0).toString();
+      if (publisher.size() == 0) {
+         // Invalid publisher name passed in.
+         return null;
+      } else {
+         // Return the publisher object that they asked for.
+         return publisher.get(0);
+      }
+   }// End of the getName method
+   public Publishers getPhone(String phone){
+      // Run the native query that we defined in the publisher entity to find the right style.
+      List<Publishers> publisher = this.entityManager.createNamedQuery("ReturnPublisherPhone",
+              Publishers.class).setParameter(1, phone).getResultList();
+      //publisher.get(0).toString();
+      if (publisher.size() == 0) {
+         // Invalid publisher name passed in.
+         return null;
+      } else {
+         // Return the publisher object that they asked for.
+         return publisher.get(0);
+      }
+   }// End of the getName method
+
 
    public authoring_entities getAuthoringEntitiesEmail(String email){
       // Run the native query that we defined in the authoring_entities entity to find the right style.
@@ -203,12 +271,98 @@ public class booksCatalog {
       }
    }// End of the getAuthoringEntitiesEmail method
 
-   public void addBook(String ISBN, String title, Integer year_published,  authoring_entities authoring_entities, Publishers publishers){
-      ISBN = JOptionPane.showInputDialog("ISBN: ");
-      title = JOptionPane.showInputDialog("Title: ");
-      year_published = Integer.valueOf(JOptionPane.showInputDialog("Year Published: "));
-
+   //menu
+   public String showMenu(){
+      Object[] options = {"Add Publisher", "Add Book", "Update a Book" ,
+                          "Delete Book","Add Writing Group", "Add Individual Author",
+                          "Add Ad Hoc Team", "Add an Individual Author to an existing Ad Hoc Team",
+                          "Show Information About a Publisher", "Show Information About a Book",
+                          "Show Information About a Writing Group", "Show Information About an Individual Author",
+                          "Show Information About an Ad Hoc Team", "List Primary Keys of Book",
+                          "List Primary Keys of Publishers", "List Primary Keys of Authoring Entities"};
+      Object selectionObject = JOptionPane.showInputDialog(null, "Choose", "Menu", JOptionPane.PLAIN_MESSAGE, null, options, options[0]);
+      String selectionString = selectionObject.toString();
+      return selectionString;
    }
-   public void addPublisher(){}
+
+   //get the ISBN of a book
+   public Books getISBN(String ISBN){
+      // Run the native query that we defined in the Books entity to find the right style.
+      List<Books> books = this.entityManager.createNamedQuery("ReturnBookISBN",
+              Books.class).setParameter(1, ISBN).getResultList();
+      if (books.size() == 0) {
+         // Invalid  Books ISBN passed in.
+         return null;
+      } else {
+         // Return the Books object that they asked for.
+         return books.get(0);
+      }
+   }
+
+   //get the title of a book
+   public Books getTitle(String title){
+      // Run the native query that we defined in the Books entity to find the right style.
+      List<Books> books = this.entityManager.createNamedQuery("ReturnBookTitle",
+              Books.class).setParameter(1, title).getResultList();
+      if (books.size() == 0) {
+         // Invalid  Books title passed in.
+         return null;
+      } else {
+         // Return the Books object that they asked for.
+         return books.get(0);
+      }
+   }
+   //add new book
+   public Books addBook(){
+
+      String ISBN = JOptionPane.showInputDialog("ISBN: ");
+      //check ISBN is not in the database
+      while(getISBN(ISBN) != null){
+         ISBN = JOptionPane.showInputDialog("Already Exists, Try Another ISBN: ");
+      }
+      String title = JOptionPane.showInputDialog("Title: ");
+      //check title is unique
+      while(getTitle(title) != null){
+         title = JOptionPane.showInputDialog("Already Exists, Try Another Title: ");
+      }
+      Integer year_published = Integer.valueOf(JOptionPane.showInputDialog("Year Published: "));
+
+      Object[] authoring_entities= this.entityManager.createNamedQuery("ReturnAuthoringEntitiesEmail",
+              authoring_entities.class).getResultList().toArray();
+      String AUTHORING_ENTITY_TYPE = JOptionPane.showInputDialog(null, "Choose", "Authoring Entities: ", JOptionPane.PLAIN_MESSAGE, null, authoring_entities, authoring_entities[0]).toString();
+
+      Object[] publishers= this.entityManager.createNamedQuery("ReturnPublishersName",
+              Publishers.class).getResultList().toArray();
+      String publisher_name = JOptionPane.showInputDialog(null, "Choose", "Publisher: ", JOptionPane.PLAIN_MESSAGE, null, publishers, publishers[0]).toString();
+
+      Books new_book = new Books(ISBN,title,year_published,getAuthoringEntitiesEmail(AUTHORING_ENTITY_TYPE),getName(publisher_name));
+
+      return new_book;
+   }
+   //add new publisher
+   public Publishers addPublisher(){
+
+      String name = JOptionPane.showInputDialog("Publisher Name: ");
+      //check if the name is not already in the database
+      while(getName(name) != null){
+         name = JOptionPane.showInputDialog("Already Exists, Try Another Name: ");
+      }
+
+      String email = JOptionPane.showInputDialog("Publisher Email: ");
+      //check if the email is not already in the database
+      while(getName(email) != null){
+         email = JOptionPane.showInputDialog("Already Exists, Try Another Email: ");
+      }
+
+      String phone = JOptionPane.showInputDialog("Publisher Phone: ");
+      //check if the phone is not already in the database
+      while(getName(phone) != null){
+         phone = JOptionPane.showInputDialog("Already Exists, Try Another Phone: ");
+      }
+
+      Publishers new_publisher = new Publishers(name,email,phone);
+
+      return new_publisher;
+   }
 
 }// End of booksCatalog class

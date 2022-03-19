@@ -17,6 +17,12 @@ import javax.persistence.*;
                 "WHERE  EMAIL = ? ",
         resultClass = authoring_entities.class
 )
+@NamedNativeQuery(
+        name="ReturnAuthoringEntitiesEmail",
+        query = "SELECT EMAIL " +
+                "FROM   AUTHORING_ENTITIES ",
+        resultClass = authoring_entities.class
+)
 public abstract class authoring_entities {
 
     @Id
