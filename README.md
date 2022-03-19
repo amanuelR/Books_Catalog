@@ -17,4 +17,4 @@ The other entities that are involved in this application are:
 We will be creating a main class that would perform different tasks based on the users input.
 
 <h3> UML Class Diagram </h3>
-(https://user-images.githubusercontent.com/92605110/159112913-ad8abd3f-2b02-49e2-86d4-3e7ec6fb83ee.png)
+![Screenshot (284)](https://user-images.githubusercontent.com/92605110/159112930-354414ad-14ad-442b-a82a-c5c529b54474.png)
