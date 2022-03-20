@@ -97,8 +97,8 @@ public class Books {
                 "ISBN='" + ISBN + '\'' +
                 ", title='" + title + '\'' +
                 ", year_published=" + year_published +
-                ", authoring_entities=" + authoring_entities +
-                ", publishers=" + publishers +
+                ", authoring_entities=" + authoring_entities.getEmail() +
+                ", publishers=" + publishers.getName() +
                 '}';
     }
 }

@@ -8,10 +8,17 @@ import java.util.List;
 
 @Entity
 @NamedNativeQuery(
-        name="ReturnIndividualAuthor",
+        name="ReturnIndividualAuthor1",
         query = "SELECT * " +
                 "FROM   authoring_entities " +
                 "WHERE  AuTHORING_ENTITY_TYPE = 'individual_authors' and name = ? ",
+        resultClass = individual_authors.class
+)
+@NamedNativeQuery(
+        name="ReturnIndividualAuthor",
+        query = "SELECT * " +
+                "FROM   authoring_entities " +
+                "WHERE  name = ? ",
         resultClass = individual_authors.class
 )
 @DiscriminatorValue(value = "INDIVIDUAL_AUTHORS")
@@ -28,6 +35,4 @@ public class individual_authors extends authoring_entities{
         super(email, name);
         this.ad_hock_teams = ad_hock_teams;
     }
-
-
 }

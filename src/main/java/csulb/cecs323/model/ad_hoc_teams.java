@@ -12,6 +12,13 @@ import java.util.List;
                 "WHERE  INDIVIDUAL_AUTHORS_EMAIL = ? ",
         resultClass = ad_hoc_teams.class
 )
+@NamedNativeQuery(
+        name="ReturnAdHocTeam",
+        query = "SELECT * " +
+                "FROM   AUTHORING_ENTITIES " +
+                "WHERE  NAME = ? ",
+        resultClass = ad_hoc_teams.class
+)
 @DiscriminatorValue(value = "AD_HOC_TEAMS")
 public class ad_hoc_teams extends authoring_entities{
     @ManyToMany

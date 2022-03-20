@@ -1,38 +1,37 @@
 package csulb.cecs323.model;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.NamedNativeQuery;
+import javax.persistence.*;
 
 @Entity
-@NamedNativeQuery(
-        name="ReturnPublisher",
-        query = "SELECT * " +
-                "FROM   PUBLISHERS " +
-                "WHERE  name = ? ",
-        resultClass = Publishers.class
-)
-@NamedNativeQuery(
-        name="ReturnPublisherEmail",
-        query = "SELECT * " +
-                "FROM   PUBLISHERS " +
-                "WHERE  email = ? ",
-        resultClass = Publishers.class
-)
-@NamedNativeQuery(
-        name="ReturnPublisherPhone",
-        query = "SELECT * " +
-                "FROM   PUBLISHERS " +
-                "WHERE  phone = ? ",
-        resultClass = Publishers.class
-)
-@NamedNativeQuery(
-        name="ReturnPublishersName",
-        query = "SELECT NAME " +
-                "FROM   PUBLISHERS ",
-        resultClass = Publishers.class
-)
+@NamedNativeQueries({
+        @NamedNativeQuery(
+                name = "ReturnPublisher",
+                query = "SELECT * " +
+                        "FROM   PUBLISHERS " +
+                        "WHERE  name = ? ",
+                resultClass = Publishers.class
+        ),
+        @NamedNativeQuery(
+                name = "ReturnPublisherEmail",
+                query = "SELECT * " +
+                        "FROM   PUBLISHERS " +
+                        "WHERE  email = ? ",
+                resultClass = Publishers.class
+        ),
+        @NamedNativeQuery(
+                name = "ReturnPublisherPhone",
+                query = "SELECT * " +
+                        "FROM   PUBLISHERS " +
+                        "WHERE  phone = ? ",
+                resultClass = Publishers.class
+        ),
+        @NamedNativeQuery(
+                name = "ReturnPublishersName",
+                query = "SELECT NAME " +
+                        "FROM   PUBLISHERS ",
+                resultClass = Publishers.class
+        )
+})
 public class Publishers {
     /** The full name of the publisher**/
     @Id

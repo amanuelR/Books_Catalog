@@ -15,11 +15,9 @@ package csulb.cecs323.app;
 // Import all of the entity classes that we have written for this application.
 import csulb.cecs323.model.*;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.EntityTransaction;
-import javax.persistence.Persistence;
+import javax.persistence.*;
 import javax.swing.*;
+import java.awt.print.Book;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
@@ -135,51 +133,82 @@ public class booksCatalog {
       String menu = booksCatalog.showMenu();
       switch (menu){
          case "Add Publisher":
-            booksCatalog.createEntity((List<Publishers>) booksCatalog.addPublisher());
+            List<Publishers> new_publishers = new ArrayList<Publishers>();
+            new_publishers.add(booksCatalog.addPublisher());
+            booksCatalog.createEntity(new_publishers);
+            tx.begin();
+               booksCatalog.createEntity(new_publishers);
+            tx.commit();
             break;
          case "Add Book":
-            booksCatalog.createEntity((List<Books>) booksCatalog.addBook());
+            List<Books> new_books = new ArrayList<Books>();
+            new_books.add(booksCatalog.addBook());
+            tx.begin();
+               booksCatalog.createEntity(new_books);
+            tx.commit();
             break;
          case "Update a Book":
 
             break;
          case "Delete Book":
+            String isbn_to_delete = booksCatalog.deleteBook();
+            //System.out.println(isbn_to_delete);
+            Books book = manager.find(Books.class,isbn_to_delete);
+            tx.begin();
+               manager.remove(book);
+            tx.commit();
             break;
          case "Add Writing Group":
+            List<writing_groups> new_writing_group = new ArrayList<writing_groups>();
+            new_writing_group.add(booksCatalog.addWritingGroup());
+            tx.begin();
+               booksCatalog.createEntity(new_writing_group);
+            tx.commit();
             break;
          case "Add Individual Author":
+            List<individual_authors> new_individual_author = new ArrayList<individual_authors>();
+            new_individual_author.add(booksCatalog.addIndividualAuthor());
+            tx.begin();
+               booksCatalog.createEntity(new_individual_author);
+            tx.commit();
             break;
          case "Add Ad Hoc Team":
+            List<ad_hoc_teams> new_ad_hoc_team = new ArrayList<ad_hoc_teams>();
+            new_ad_hoc_team.add(booksCatalog.addAdHocTeam());
+            tx.begin();
+               booksCatalog.createEntity(new_ad_hoc_team);
+            tx.commit();
             break;
          case "Add an Individual Author to an existing Ad Hoc Team":
             break;
          case "Show Information About a Publisher":
+            booksCatalog.showPublisherInfo();
             break;
          case "Show Information About a Book":
+            booksCatalog.showBookInfo();
             break;
          case "Show Information About a Writing Group":
+            booksCatalog.showWritingGroupInfo();
             break;
          case "Show Information About an Individual Author":
+            booksCatalog.showIndividualAuthorInfo();
             break;
          case "Show Information About an Ad Hoc Team":
+            booksCatalog.showAdHocTeamInfo();
             break;
          case "List Primary Keys of Book":
+            booksCatalog.displayBooksPKs();
             break;
          case "List Primary Keys of Publishers":
+            booksCatalog.displayPublishersPKs();
             break;
          case "List Primary Keys of Authoring Entities":
+            booksCatalog.displayAuthoringEntities();
             break;
-
-      }
+      }// End of the switch statement
 
    } // End of the main method
 
-   /**
-    * Create and persist a list of objects to the database.
-    * @param entities   The list of entities to persist.  These can be any object that has been
-    *                   properly annotated in JPA and marked as "persistable."  I specifically
-    *                   used a Java generic so that I did not have to write this over and over.
-    */
    public <E> void createEntity(List <E> entities) {
       for (E next : entities) {
          LOGGER.info("Persisting: " + next);
@@ -195,14 +224,6 @@ public class booksCatalog {
       }
    } // End of createEntity member method
 
-   /**
-    * Think of this as a simple map from a String to an instance of auto_body_styles that has the
-    * same name, as the string that you pass in.  To create a new Cars instance, you need to pass
-    * in an instance of auto_body_styles to satisfy the foreign key constraint, not just a string
-    * representing the name of the style.
-    * @paramname       The name of the autobody style that you are looking for.
-    * @return           The auto_body_styles instance corresponding to that style name.
-    */
   /* public individual_authors getEmail (String name) {
       // Run the native query that we defined in the individual_authors entity to find the right email.
       List<individual_authors> authors = this.entityManager.createNamedQuery("ReturnIndividualAuthor",
@@ -327,13 +348,15 @@ public class booksCatalog {
       }
       Integer year_published = Integer.valueOf(JOptionPane.showInputDialog("Year Published: "));
 
-      Object[] authoring_entities= this.entityManager.createNamedQuery("ReturnAuthoringEntitiesEmail",
-              authoring_entities.class).getResultList().toArray();
-      String AUTHORING_ENTITY_TYPE = JOptionPane.showInputDialog(null, "Choose", "Authoring Entities: ", JOptionPane.PLAIN_MESSAGE, null, authoring_entities, authoring_entities[0]).toString();
+      List<String> name = entityManager.createQuery("Select p.name from Publishers p").getResultList();
+      Object[] publishers = name.toArray();
 
-      Object[] publishers= this.entityManager.createNamedQuery("ReturnPublishersName",
-              Publishers.class).getResultList().toArray();
-      String publisher_name = JOptionPane.showInputDialog(null, "Choose", "Publisher: ", JOptionPane.PLAIN_MESSAGE, null, publishers, publishers[0]).toString();
+      String publisher_name = String.valueOf(JOptionPane.showInputDialog(null, "Choose", "Publisher: ", JOptionPane.PLAIN_MESSAGE, null, publishers, publishers[0]));
+
+      List<String> authoring_entities_email = entityManager.createQuery("Select a.email from authoring_entities a").getResultList();
+      Object[] email = authoring_entities_email.toArray();
+      String AUTHORING_ENTITY_TYPE = String.valueOf(JOptionPane.showInputDialog(null, "Choose", "Authoring Entities: ", JOptionPane.PLAIN_MESSAGE, null, email, email[0]));
+
 
       Books new_book = new Books(ISBN,title,year_published,getAuthoringEntitiesEmail(AUTHORING_ENTITY_TYPE),getName(publisher_name));
 
@@ -365,4 +388,174 @@ public class booksCatalog {
       return new_publisher;
    }
 
+   //update a book
+   public void updateBook(){
+      List<String> isbns = entityManager.createQuery("Select b.ISBN from Books b").getResultList();
+      Object[] books = isbns.toArray();
+
+      String books_to_be_updated = String.valueOf(JOptionPane.showInputDialog(null, "Choose", "Book: ", JOptionPane.PLAIN_MESSAGE, null, books, books[0]));
+
+   }
+   //delete a book
+   public String deleteBook(){
+      List<String> isbns = entityManager.createQuery("Select b.ISBN from Books b").getResultList();
+      Object[] books = isbns.toArray();
+
+      String book_to_delete = String.valueOf(JOptionPane.showInputDialog(null, "Choose", "Book: ", JOptionPane.PLAIN_MESSAGE, null, books, books[0]));
+
+      return book_to_delete;
+   }
+   //add writing group
+   public writing_groups addWritingGroup(){
+      String name = JOptionPane.showInputDialog("Writing Group Name: ");
+      String email = JOptionPane.showInputDialog("Writing Group Email: ");
+      while(getAuthoringEntitiesEmail(email) != null){
+         email = JOptionPane.showInputDialog("Already Exists, Try Another Email: ");
+      }
+      String head_writer = JOptionPane.showInputDialog("Writing Group Head Writer: ");
+      Integer year_formed = Integer.valueOf(JOptionPane.showInputDialog("Writing Group Year Formed: "));
+
+      writing_groups new_writing_groups = new writing_groups(name,email,head_writer,year_formed);
+
+      return new_writing_groups;
+   }
+   //add individual author
+   public individual_authors addIndividualAuthor(){
+      String name = JOptionPane.showInputDialog("Individual Author Name: ");
+      String email = JOptionPane.showInputDialog("Individual Author Email: ");
+      while(getAuthoringEntitiesEmail(email) != null){
+         email = JOptionPane.showInputDialog("Already Exists, Try Another Email: ");
+      }
+
+      individual_authors new_individual_author = new individual_authors(name,email,null);
+      return new_individual_author;
+   }
+   //add ad hoc team
+   public ad_hoc_teams addAdHocTeam(){
+      String name = JOptionPane.showInputDialog("Ad Hoc Team Name: ");
+      String email = JOptionPane.showInputDialog("Ad Hoc Team Email: ");
+      while(getAuthoringEntitiesEmail(email) != null){
+         email = JOptionPane.showInputDialog("Already Exists, Try Another Email: ");
+      }
+
+      ad_hoc_teams new_ad_hoc_team = new ad_hoc_teams(name,email,null);
+      return new_ad_hoc_team;
+   }
+
+   public void addIndividualAuthorToAdHocTeam(){ }
+   public void showPublisherInfo(){
+      List<String> name = entityManager.createQuery("Select p.name from Publishers p").getResultList();
+      Object[] publishers = name.toArray();
+
+      String publisher_name = String.valueOf(JOptionPane.showInputDialog(null, "Choose", "Publisher: ", JOptionPane.PLAIN_MESSAGE, null, publishers, publishers[0]));
+
+      List<Publishers> publisherss = this.entityManager.createNamedQuery("ReturnPublisher",
+              Publishers.class).setParameter(1, publisher_name).getResultList();
+
+      Publishers p = publisherss.get(0);
+      String publisher_info = p.toString();
+
+      JOptionPane.showMessageDialog(null,"Publisher Info: " + publisher_info);
+   }
+
+   public void showBookInfo(){
+      List<String> title = entityManager.createQuery("Select b.title from Books b").getResultList();
+      Object[] books = title.toArray();
+
+      String book_title = String.valueOf(JOptionPane.showInputDialog(null, "Choose", "Book: ", JOptionPane.PLAIN_MESSAGE, null, books, books[0]));
+
+      List<Books> bookss = this.entityManager.createNamedQuery("ReturnBookTitle",
+              Books.class).setParameter(1, book_title).getResultList();
+
+      Books b = bookss.get(0);
+      String book_info = b.toString();
+
+      JOptionPane.showMessageDialog(null,"Book Info: " + book_info);
+
+   }
+
+   public void showWritingGroupInfo(){
+      List<String> names = entityManager.createQuery("Select w.name from writing_groups w").getResultList();
+      Object[] writing_groups = names.toArray();
+
+      String wg_name = String.valueOf(JOptionPane.showInputDialog(null, "Choose", "Writing Group: ", JOptionPane.PLAIN_MESSAGE, null, writing_groups, writing_groups[0]));
+
+      List<writing_groups> writingGroups = this.entityManager.createNamedQuery("ReturnWritingGroup",
+              writing_groups.class).setParameter(1, wg_name).getResultList();
+
+      writing_groups writingGroups1 = writingGroups.get(0);
+      String writing_group_info = writingGroups1.toString();
+
+      JOptionPane.showMessageDialog(null,"Book Info: " + writing_group_info);
+
+   }
+
+   public void showIndividualAuthorInfo(){
+      List<String> author_names = entityManager.createQuery("Select i.name from individual_authors i").getResultList();
+      Object[] individual_authors = author_names.toArray();
+
+      String ind_author_name = String.valueOf(JOptionPane.showInputDialog(null, "Choose", "Writing Group: ", JOptionPane.PLAIN_MESSAGE, null, individual_authors, individual_authors[0]));
+
+      List<individual_authors> individualAuthors = this.entityManager.createNamedQuery("ReturnIndividualAuthor",
+              individual_authors.class).setParameter(1,ind_author_name).getResultList();
+
+      individual_authors authors = individualAuthors.get(0);
+      String author_info = authors.toString();
+
+      JOptionPane.showMessageDialog(null,"Individual Author Info: " + author_info);
+
+   }
+
+   public void showAdHocTeamInfo(){
+      List<String> team_names = entityManager.createQuery("Select i.name from ad_hoc_teams i").getResultList();
+      Object[] ad_hoc_team_names = team_names.toArray();
+
+      String sel_team_name = String.valueOf(JOptionPane.showInputDialog(null, "Choose", "Writing Group: ", JOptionPane.PLAIN_MESSAGE, null, ad_hoc_team_names, ad_hoc_team_names[0]));
+
+      List<ad_hoc_teams> adHocTeams = this.entityManager.createNamedQuery("ReturnAdHocTeam",
+              ad_hoc_teams.class).setParameter(1,sel_team_name).getResultList();
+
+      ad_hoc_teams  team= adHocTeams.get(0);
+      String team_info = team.toString();
+
+      JOptionPane.showMessageDialog(null,"Ad Hoc Team Info: " + team_info);
+
+   }
+
+   public void displayBooksPKs(){
+      List<String> isbn = entityManager.createQuery("Select b.ISBN from Books b").getResultList();
+      List<String> title = entityManager.createQuery("Select b.title from Books b").getResultList();
+      String rows = "";
+      for(int i = 0; i < isbn.size(); i++){
+         rows = rows + "<tr><td>"+isbn.get(i)+"</td><td>"+title.get(i)+"</td></tr>";
+
+        // rows = rows + isbn.get(i) + "                     " + title.get(i) + "\n";
+      }
+      JOptionPane.showMessageDialog(null,"<html><table border = 1><tr color = #FF0000><td>Primary Key </td><td>Title</td></tr>"+rows+"</table></html>");
+   }
+   public void displayPublishersPKs(){
+      List<String> publisher_name = entityManager.createQuery("Select p.name from Publishers p").getResultList();
+
+      String rows = "";
+      for(int i = 0; i < publisher_name.size(); i++){
+         rows = rows + "<tr><td>" + publisher_name.get(i) + "</td></tr>";
+      }
+      JOptionPane.showMessageDialog(null,"<html><table border = 1><tr color = #FF0000><td>Primary Keys(Publishers)</td></tr>"+rows+"</table></html>");
+   }
+
+   public void displayAuthoringEntities(){
+      List<String> emails = entityManager.createQuery("Select ae.email from authoring_entities ae").getResultList();
+      //List<String> type = entityManager.createQuery("Select ae from authoring_entities ae ").getResultList();
+     // List<authoring_entities> authoring_entities = this.entityManager.createNamedQuery("ReturnAuthoringEntityType",
+           //   authoring_entities.class).getResultList();
+      String rows = "";
+      for(int i = 0; i < emails.size(); i++){
+        // rows = rows + String.format(emails.get(i),getAuthoringEntitiesEmail(emails.get(i)).getClass().getAnnotation(DiscriminatorValue.class).value());
+        rows = rows + "<tr><td>"+emails.get(i)+"</td><td>"+getAuthoringEntitiesEmail(emails.get(i)).getClass().getAnnotation(DiscriminatorValue.class).value()+"</td></tr>";
+         //rows = rows  + emails.get(i) + "                                           " + getAuthoringEntitiesEmail(emails.get(i)).getClass().getAnnotation(DiscriminatorValue.class).value() + "\n";
+      }
+      //rows = rows + "</table></html>";
+      JOptionPane.showMessageDialog(null,"<html><table border = 1><tr color = #FF0000><td>Primary Key</td><td>Type</td></tr>"+rows+"</table></html>" );
+
+   }
 }// End of booksCatalog class

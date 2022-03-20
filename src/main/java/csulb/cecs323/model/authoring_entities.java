@@ -10,19 +10,27 @@ import javax.persistence.*;
         discriminatorType = DiscriminatorType.STRING
 )
 @Table(name = "AUTHORING_ENTITIES")
-@NamedNativeQuery(
-        name="ReturnAuthoringEntities",
-        query = "SELECT * " +
-                "FROM   AUTHORING_ENTITIES " +
-                "WHERE  EMAIL = ? ",
-        resultClass = authoring_entities.class
-)
-@NamedNativeQuery(
-        name="ReturnAuthoringEntitiesEmail",
-        query = "SELECT EMAIL " +
-                "FROM   AUTHORING_ENTITIES ",
-        resultClass = authoring_entities.class
-)
+@NamedNativeQueries({
+        @NamedNativeQuery(
+                name = "ReturnAuthoringEntities",
+                query = "SELECT * " +
+                        "FROM   AUTHORING_ENTITIES " +
+                        "WHERE  EMAIL = ? ",
+                resultClass = authoring_entities.class
+        ),
+        @NamedNativeQuery(
+                name = "ReturnAuthoringEntitiesEmail",
+                query = "SELECT EMAIL " +
+                        "FROM   AUTHORING_ENTITIES ",
+                resultClass = authoring_entities.class
+        ),
+        @NamedNativeQuery(
+                name = "ReturnAuthoringEntityType",
+                query = "SELECT AUTHORING_ENTITY_TYPE " +
+                        "FROM AUTHORING_ENTITIES ",
+                resultClass = authoring_entities.class
+        )
+})
 public abstract class authoring_entities {
 
     @Id
