@@ -66,9 +66,8 @@ public abstract class authoring_entities {
 
     @Override
     public String toString() {
-        return "authoring_entities{" +
-                "email='" + email + '\'' +
-                ", name='" + name + '\'' +
-                '}';
+        return " \n Entity Type: " + getClass().getAnnotation(DiscriminatorValue.class).value() + "\n"
+                + " Email: " + email + "\n" +
+                " Name: " + name + "\n";
     }
 }

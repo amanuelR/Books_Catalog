@@ -16,43 +16,16 @@ package csulb.cecs323.app;
 import csulb.cecs323.model.*;
 
 import javax.persistence.*;
+import javax.persistence.criteria.CriteriaBuilder;
 import javax.swing.*;
 import java.awt.print.Book;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
-/**
- * A simple application to demonstrate how to persist an object in JPA.
- * <p>
- * This is for demonstration and educational purposes only.
- * </p>
- * <p>
- *     Originally provided by Dr. Alvaro Monge of CSULB, and subsequently modified by Dave Brown.
- * </p>
- */
 public class booksCatalog {
-   /**
-    * You will likely need the entityManager in a great many functions throughout your application.
-    * Rather than make this a global variable, we will make it an instance variable within the booksCatalog
-    * class, and create an instance of booksCatalog in the main.
-    */
    private EntityManager entityManager;
-
-   /**
-    * The Logger can easily be configured to log to a file, rather than, or in addition to, the console.
-    * We use it because it is easy to control how much or how little logging gets done without having to
-    * go through the application and comment out/uncomment code and run the risk of introducing a bug.
-    * Here also, we want to make sure that the one Logger instance is readily available throughout the
-    * application, without resorting to creating a global variable.
-    */
    private static final Logger LOGGER = Logger.getLogger(booksCatalog.class.getName());
-
-   /**
-    * The constructor for the booksCatalog class.  All that it does is stash the provided EntityManager
-    * for use later in the application.
-    * @param manager    The EntityManager that we will use.
-    */
    public booksCatalog(EntityManager manager) {
       this.entityManager = manager;
    }
@@ -148,7 +121,16 @@ public class booksCatalog {
             tx.commit();
             break;
          case "Update a Book":
-
+            List<Books> updateBook = new ArrayList<Books>();
+            updateBook.add(booksCatalog.updateBook());
+            Books findBook = manager.find(Books.class, updateBook.get(0).getISBN());
+            findBook.setTitle(updateBook.get(0).getTitle());
+            findBook.setYear_published(updateBook.get(0).getYear_published());
+            findBook.setPublishers(updateBook.get(0).getPublishers());
+            findBook.setAuthoring_entities(updateBook.get(0).getAuthoring_entities());
+            tx.begin();
+               manager.merge(findBook);
+            tx.commit();
             break;
          case "Delete Book":
             String isbn_to_delete = booksCatalog.deleteBook();
@@ -180,6 +162,9 @@ public class booksCatalog {
             tx.commit();
             break;
          case "Add an Individual Author to an existing Ad Hoc Team":
+            tx.begin();
+                booksCatalog.addIndividualAuthorToAdHocTeam();
+            tx.commit();
             break;
          case "Show Information About a Publisher":
             booksCatalog.showPublisherInfo();
@@ -389,12 +374,36 @@ public class booksCatalog {
    }
 
    //update a book
-   public void updateBook(){
+   public Books updateBook(){
       List<String> isbns = entityManager.createQuery("Select b.ISBN from Books b").getResultList();
       Object[] books = isbns.toArray();
 
       String books_to_be_updated = String.valueOf(JOptionPane.showInputDialog(null, "Choose", "Book: ", JOptionPane.PLAIN_MESSAGE, null, books, books[0]));
 
+      List<Books> booksList = this.entityManager.createNamedQuery("ReturnBookISBN",
+              Books.class).setParameter(1, books_to_be_updated).getResultList();
+
+      String title = JOptionPane.showInputDialog("New Title: ", booksList.get(0).getTitle());
+      Integer year_published = Integer.valueOf(JOptionPane.showInputDialog("New Year Published: ",booksList.get(0).getYear_published()));
+
+      List<String> publisher_name = entityManager.createQuery("Select p.name from Publishers p").getResultList();
+      Object[] publishers = publisher_name.toArray();
+
+      String new_publisher_name = JOptionPane.showInputDialog(null, "Choose", "Menu",JOptionPane.PLAIN_MESSAGE, null,publishers,booksList.get(0).getPublishers()).toString();
+
+      List<String> authoring_entities_email = entityManager.createQuery("Select ae.email from authoring_entities ae").getResultList();
+      Object[] authors = authoring_entities_email.toArray();
+
+      String new_ae_email = JOptionPane.showInputDialog(null, "Choose", "Menu",JOptionPane.PLAIN_MESSAGE, null,authors,booksList.get(0).getAuthoring_entities().getEmail()).toString();
+
+
+      Books update = new Books(booksList.get(0).getISBN(), title, year_published,getAuthoringEntitiesEmail(new_ae_email),getName(new_publisher_name));
+
+      return update;
+      //title -> current -> edit
+      //authoring_entites -> update
+
+      //set the default value to the current value for each attributes
    }
    //delete a book
    public String deleteBook(){
@@ -442,7 +451,26 @@ public class booksCatalog {
       return new_ad_hoc_team;
    }
 
-   public void addIndividualAuthorToAdHocTeam(){ }
+   public void addIndividualAuthorToAdHocTeam(){
+
+      List<String> name = entityManager.createQuery("Select ia.name from individual_authors ia").getResultList();
+      Object[] authorSel = name.toArray();
+
+      String individual_author_name = String.valueOf(JOptionPane.showInputDialog(null, "Choose", "Individual Author: ", JOptionPane.PLAIN_MESSAGE, null, authorSel, authorSel[0]));
+
+      List<individual_authors> authors = this.entityManager.createNamedQuery("ReturnIndividualAuthor",
+              individual_authors.class).setParameter(1, individual_author_name).getResultList();
+
+      List<String> team = entityManager.createQuery("Select aht.name from ad_hoc_teams aht").getResultList();
+      Object[] ad_hoc_team = team.toArray();
+      String teamSel = String.valueOf(JOptionPane.showInputDialog(null, "Choose", "Ad Hoc Team: ", JOptionPane.PLAIN_MESSAGE, null, ad_hoc_team, ad_hoc_team[0]));
+
+      List<ad_hoc_teams> adHocTeams = this.entityManager.createNamedQuery("ReturnAdHocTeam",
+              ad_hoc_teams.class).setParameter(1, teamSel).getResultList();
+
+      adHocTeams.get(0).add_individual_authors(authors.get(0));
+
+   }
    public void showPublisherInfo(){
       List<String> name = entityManager.createQuery("Select p.name from Publishers p").getResultList();
       Object[] publishers = name.toArray();
@@ -486,7 +514,7 @@ public class booksCatalog {
       writing_groups writingGroups1 = writingGroups.get(0);
       String writing_group_info = writingGroups1.toString();
 
-      JOptionPane.showMessageDialog(null,"Book Info: " + writing_group_info);
+      JOptionPane.showMessageDialog(null,"Writing Group Info: " + writing_group_info);
 
    }
 

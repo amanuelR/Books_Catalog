@@ -93,12 +93,11 @@ public class Books {
 
     @Override
     public String toString() {
-        return "Books{" +
-                "ISBN='" + ISBN + '\'' +
-                ", title='" + title + '\'' +
-                ", year_published=" + year_published +
-                ", authoring_entities=" + authoring_entities.getEmail() +
-                ", publishers=" + publishers.getName() +
-                '}';
+        return "\n" +
+                "ISBN: " + ISBN + '\n' +
+                "Title: " + title + '\n' +
+                "Year Published: " + year_published +"\n" +
+                "Authoring Entity Name: " + authoring_entities.getEmail() +"\n" +
+                "Publisher Name: " + publishers.getName() + "\n";
     }
 }

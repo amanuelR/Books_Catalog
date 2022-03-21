@@ -47,9 +47,8 @@ public class writing_groups extends authoring_entities{
 
     @Override
     public String toString() {
-        return "writing_groups{" + super.toString() +
-                "head_writer='" + head_writer + '\'' +
-                ", year_formed=" + year_formed +
-                '}';
+        return  super.toString() +
+                " Head Writer: " + head_writer + "\n" +
+                " Year Formed=" + year_formed;
     }
 }
