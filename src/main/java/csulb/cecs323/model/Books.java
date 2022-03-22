@@ -17,6 +17,13 @@ import javax.persistence.*;
                 "WHERE  TITLE = ? ",
         resultClass = Books.class
 )
+@NamedNativeQuery(
+        name="ReturnBookTitleForUpdate",
+        query = "SELECT * " +
+                "FROM   BOOKS " +
+                "WHERE  TITLE <> ? ",
+        resultClass = Books.class
+)
 public class Books {
     @Id
     @Column(nullable = false, length = 17)
@@ -79,17 +86,17 @@ public class Books {
         return authoring_entities;
     }
 
-    /** Default Constructor **/
+    /** a Books default Constructor **/
     public Books(){}
 
-    /** Constructor that accepts all the attributes **/
+    /** a Books constructor that takes five parameters (attributes) **/
     public Books(String ISBN, String title, Integer year_published,authoring_entities authoring_entities , Publishers publishers) {
         this.ISBN = ISBN;
         this.title = title;
         this.year_published = year_published;
         this.authoring_entities = authoring_entities;
         this.publishers = publishers;
-    }
+    }//End of constructor
 
     @Override
     public String toString() {

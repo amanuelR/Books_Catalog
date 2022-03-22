@@ -57,17 +57,19 @@ public abstract class authoring_entities {
         this.name = name;
     }
 
+    /** authoring_entities's default constructor */
     public authoring_entities() {}
 
+    /**  an authoring_entities constructor that takes two parameters(attributes) */
     public authoring_entities(String email, String name) {
         this.email = email;
         this.name = name;
-    }
+    }//End of constructor
 
     @Override
     public String toString() {
         return " \n Entity Type: " + getClass().getAnnotation(DiscriminatorValue.class).value() + "\n"
                 + " Email: " + email + "\n" +
                 " Name: " + name + "\n";
-    }
-}
+    }//End of toString()
+}//End of authoring_entities class

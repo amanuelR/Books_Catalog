@@ -28,9 +28,12 @@ public class individual_authors extends authoring_entities{
     List<ad_hoc_teams> ad_hock_teams;
 
 
+    /** individual_authors's default constructor*/
     public individual_authors() {
         super();
     }
+
+    /** individual_authors's constructor that takes three parameters(attributes)*/
     public individual_authors(String email, String name, List<ad_hoc_teams> ad_hock_teams) {
         super(email, name);
         this.ad_hock_teams = ad_hock_teams;

@@ -37,8 +37,10 @@ public class writing_groups extends authoring_entities{
         this.year_formed = year_formed;
     }
 
+    /**writing_groups's default constructor*/
     public writing_groups() { super(); }
 
+    /** writing_groups's constructor that takes four parameters(attributes)*/
     public writing_groups(String email, String name, String head_writer, Integer year_formed) {
         super(email, name);
         this.head_writer = head_writer;

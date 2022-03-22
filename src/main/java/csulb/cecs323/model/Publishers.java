@@ -49,6 +49,7 @@ public class Publishers {
     /** Default Constructor **/
     public Publishers(){}
 
+    /** Publishers's constructor that takes three parameters(attributes)*/
     public Publishers(String name, String email, String phone) {
         this.name = name;
         this.email = email;

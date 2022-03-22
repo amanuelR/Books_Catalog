@@ -1,6 +1,7 @@
 package csulb.cecs323.model;
 
 import javax.persistence.*;
+import javax.swing.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,14 +44,24 @@ public class ad_hoc_teams extends authoring_entities{
         return individual_authors;
     }
 
-    public void setIndividual_authors(List<csulb.cecs323.model.individual_authors> individual_authors) {
+    public void setIndividual_authors(List<individual_authors> individual_authors) {
         this.individual_authors = individual_authors;
     }
 
-    //add individual author to ad_hoc_teams
+
+    /** Adds an individual author to an ad hoc team after checking if that instance of individual author
+     *  is not part of the team currently
+     * @param individual_authors an individual author instance that is going to be added to ad hoc team
+     */
     public void add_individual_authors(individual_authors individual_authors){
+            //boolean flag = false;
             if(!(this.individual_authors.contains(individual_authors))){
                  this.individual_authors.add(individual_authors);
+                 //flag = true;
             }
-    }
-}
+            else{
+                JOptionPane.showMessageDialog( null,"Individual Author Already in the Team.");
+            }
+            //return flag;
+    }//End of add_individual_authors
+}//End of ad_hoc_teams class
