@@ -32,7 +32,7 @@
 			<!-- best option during development of JPA entities is to drop the tables and create them:  drop-and-create-->
 			<!-- to create the tables:  create-tables -->
 			<!-- to do nothing (use what's in the DBMS):  none -->
-			<property name="javax.persistence.schema-generation.database.action" value="drop-and-create" />
+			<property name="javax.persistence.schema-generation.database.action" value="none" />
 			<property name="javax.persistence.schema-generation.create-source" value="metadata"/>
 			<property name="javax.persistence.schema-generation.drop-source" value="metadata"/>
 
@@ -41,8 +41,8 @@
 <!--			<property name="eclipselink.application-location" value="src/ddl" />-->
 
 			<!-- to load data from a SQL file. The SQL file must have one INSERT statement per line, no semicolons -->
-			<!-- pathname is relative to folder with project resources -->
-			<property name="javax.persistence.sql-load-script-source" value="sql/seed-data.sql" />
+			<!-- pathname is relative to folder with project resources
+			<property name="javax.persistence.sql-load-script-source" value="sql/seed-data.sql" /> -->
 
 			<!-- Logging levels, see: https://wiki.eclipse.org/EclipseLink/Examples/JPA/Logging -->
 			<!-- Change property value to OFF or WARNING to disable or minimize logging. -->

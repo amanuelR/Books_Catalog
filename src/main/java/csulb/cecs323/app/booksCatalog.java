@@ -7,6 +7,8 @@
  *                                     Jonathan Kirtland
  *
  *                                     3/20/2022
+ *  Note: make sure this property has the same value as provided below with your persistence.xml property
+ *       <property name="javax.persistence.schema-generation.database.action" value="none" />
  **/
 
 package csulb.cecs323.app;
@@ -35,7 +37,12 @@ public class booksCatalog {
       EntityManager manager = factory.createEntityManager();
       /** Create an instance of booksCatalog and store our new EntityManager as an instance variable. **/
       booksCatalog booksCatalog= new booksCatalog(manager);
-
+      /**
+       * Note: Please uncomment the next segment of the code when you run the program for the first time
+       *       then comment it back. Things to consider for the first run, after uncommenting the segment mentioned above
+       *       please comment line 114 - 115 and line 212, so error could be avoided.
+       * */
+/*
       List<Publishers> publishers = new ArrayList<Publishers>();
       List<Books> books = new ArrayList<Books>();
       List<writing_groups> writing_groups = new ArrayList<writing_groups>();
@@ -73,9 +80,9 @@ public class booksCatalog {
       // Any changes to the database need to be done within a transaction.
       // See: https://en.wikibooks.org/wiki/Java_Persistence/Transactions
 
+
       LOGGER.fine("Begin of Transaction");
       EntityTransaction tx = manager.getTransaction();
-
       tx.begin();
 
       booksCatalog.createEntity(writing_groups);
@@ -100,24 +107,31 @@ public class booksCatalog {
       tx.begin();
       booksCatalog.createEntity(ad_hoc_teams);
       booksCatalog.createEntity(books);
-      tx.commit();
+      tx.commit();*/
 
+      /**
+       * Comment the next two lines of code before you perform a first run, then
+       * uncomment it after performing and finishing the first run.
+      */
+      LOGGER.fine("Begin of Transaction");
+      EntityTransaction tx = manager.getTransaction();
       String menu = booksCatalog.showMenu();
+
+      //Since we are doing one case for each run, we only need to start one transaction
+      tx.begin();
       switch (menu){
          case "Add Publisher":
             List<Publishers> new_publishers = new ArrayList<Publishers>();
             new_publishers.add(booksCatalog.addPublisher());
             booksCatalog.createEntity(new_publishers);
-            tx.begin();
                booksCatalog.createEntity(new_publishers);
-            tx.commit();
+               JOptionPane.showMessageDialog( null,new_publishers.get(0).getName() + " is added to the Publishers table.");
             break;
          case "Add Book":
             List<Books> new_books = new ArrayList<Books>();
             new_books.add(booksCatalog.addBook());
-            tx.begin();
                booksCatalog.createEntity(new_books);
-            tx.commit();
+               JOptionPane.showMessageDialog( null,new_books.get(0).getTitle() + " is added to the Books table.");
             break;
          case "Update a Book":
             List<Books> updateBook = new ArrayList<Books>();
@@ -127,43 +141,36 @@ public class booksCatalog {
             findBook.setYear_published(updateBook.get(0).getYear_published());
             findBook.setPublishers(updateBook.get(0).getPublishers());
             findBook.setAuthoring_entities(updateBook.get(0).getAuthoring_entities());
-            tx.begin();
                manager.merge(findBook);
-            tx.commit();
+               JOptionPane.showMessageDialog( null,"Book "+findBook.getISBN() + " is Updated.");
             break;
          case "Delete Book":
             String isbn_to_delete = booksCatalog.deleteBook();
             //System.out.println(isbn_to_delete);
             Books book = manager.find(Books.class,isbn_to_delete);
-            tx.begin();
                manager.remove(book);
-            tx.commit();
+               JOptionPane.showMessageDialog( null,"Book "+ isbn_to_delete + " is deleted from Books table.");
             break;
          case "Add Writing Group":
             List<writing_groups> new_writing_group = new ArrayList<writing_groups>();
             new_writing_group.add(booksCatalog.addWritingGroup());
-            tx.begin();
                booksCatalog.createEntity(new_writing_group);
-            tx.commit();
+               JOptionPane.showMessageDialog( null,new_writing_group.get(0).getName() + " is added to the writing_groups table.");
             break;
          case "Add Individual Author":
             List<individual_authors> new_individual_author = new ArrayList<individual_authors>();
             new_individual_author.add(booksCatalog.addIndividualAuthor());
-            tx.begin();
                booksCatalog.createEntity(new_individual_author);
-            tx.commit();
+               JOptionPane.showMessageDialog( null,new_individual_author.get(0).getName() + " is added to the individual_authors table.");
             break;
          case "Add Ad Hoc Team":
             List<ad_hoc_teams> new_ad_hoc_team = new ArrayList<ad_hoc_teams>();
             new_ad_hoc_team.add(booksCatalog.addAdHocTeam());
-            tx.begin();
                booksCatalog.createEntity(new_ad_hoc_team);
-            tx.commit();
+               JOptionPane.showMessageDialog( null,new_ad_hoc_team.get(0).getName() + " is added to the ad_hoc_teams table.");
             break;
          case "Add an Individual Author to an existing Ad Hoc Team":
-            tx.begin();
                 booksCatalog.addIndividualAuthorToAdHocTeam();
-            tx.commit();
             break;
          case "Show Information About a Publisher":
             booksCatalog.showPublisherInfo();
@@ -191,6 +198,9 @@ public class booksCatalog {
             break;
       }// End of the switch statement
 
+      //After breaking out from a switch case, if there is anything to commit, we commit.
+      tx.commit();
+      LOGGER.fine("End of Transaction");
    } // End of the main method
 
    /** Provided by Professor David Brown
@@ -240,6 +250,24 @@ public class booksCatalog {
       // Run the native query that we defined in the publisher entity to find the right style.
       List<Publishers> publisher = this.entityManager.createNamedQuery("ReturnPublisherEmail",
               Publishers.class).setParameter(1, email).getResultList();
+      //publisher.get(0).toString();
+      if (publisher.size() == 0) {
+         // Invalid publisher name passed in.
+         return null;
+      } else {
+         // Return the publisher object that they asked for.
+         return publisher.get(0);
+      }
+   }// End of the getName method
+
+    /** returns a publisher instance that has the given phone number
+     * @param phone- a phone number of a publisher
+     * @return publisher object
+     */
+   public Publishers getPhone(String phone){
+      // Run the native query that we defined in the publisher entity to find the right style.
+      List<Publishers> publisher = this.entityManager.createNamedQuery("ReturnPublisherPhone",
+              Publishers.class).setParameter(1, phone).getResultList();
       //publisher.get(0).toString();
       if (publisher.size() == 0) {
          // Invalid publisher name passed in.
@@ -357,19 +385,19 @@ public class booksCatalog {
 
       String publisher_name = JOptionPane.showInputDialog("Publisher Name: ");
       //check if the name is not already in the database
-      while(getName(publisher_name ) != null){
+      while(getName(publisher_name) != null){
          publisher_name  = JOptionPane.showInputDialog("Already Exists, Try Another Name: ");
       }
 
       String publisher_email = JOptionPane.showInputDialog("Publisher Email: ");
       //check if the email is not already in the database
-      while(getName(publisher_email) != null){
+      while(getEmail(publisher_email) != null){
          publisher_email = JOptionPane.showInputDialog("Already Exists, Try Another Email: ");
       }
 
       String publisher_phone = JOptionPane.showInputDialog("Publisher Phone: ");
       //check if the phone is not already in the database
-      while(getName(publisher_phone) != null){
+      while(getPhone(publisher_phone) != null){
          publisher_phone = JOptionPane.showInputDialog("Already Exists, Try Another Phone: ");
       }
 
@@ -400,9 +428,11 @@ public class booksCatalog {
       List<Books> book_exists = this.entityManager.createNamedQuery("ReturnBookTitleForUpdate",
               Books.class).setParameter(1, title).getResultList();
       //Check if there is a book with the title that the user is inputting
-      while(!book_exists.isEmpty()){
-         title = JOptionPane.showInputDialog("Already Exists, Try Another Title: ");
-         book_exists.clear();
+
+
+      while (!book_exists.isEmpty()) {
+            title = JOptionPane.showInputDialog("Already Exists, Try Another Title: ");
+            book_exists.clear();
       }
 
       Integer year_published = Integer.valueOf(JOptionPane.showInputDialog("New Year Published: ",booksList.get(0).getYear_published()));
@@ -450,7 +480,7 @@ public class booksCatalog {
       String head_writer = JOptionPane.showInputDialog("Writing Group Head Writer: ");
       Integer year_formed = Integer.valueOf(JOptionPane.showInputDialog("Writing Group Year Formed: "));
 
-      writing_groups new_writing_groups = new writing_groups(name,email,head_writer,year_formed);
+      writing_groups new_writing_groups = new writing_groups(email,name,head_writer,year_formed);
 
       return new_writing_groups;
    }//End of addWritingGroup()
@@ -468,7 +498,7 @@ public class booksCatalog {
          individual_author_email = JOptionPane.showInputDialog("Already Exists, Try Another Email: ");
       }
       //create a new object of individual author and return it
-      individual_authors new_individual_author = new individual_authors(individual_author_name,individual_author_email,null);
+      individual_authors new_individual_author = new individual_authors(individual_author_email,individual_author_name,null);
       return new_individual_author;
    }//End of addIndividualAuthor()
 
@@ -486,7 +516,7 @@ public class booksCatalog {
       }
 
       //create an ad_hoc_team object and return it
-      ad_hoc_teams new_ad_hoc_team = new ad_hoc_teams(ad_hoc_team_name,ad_hoc_team_email,null);
+      ad_hoc_teams new_ad_hoc_team = new ad_hoc_teams(ad_hoc_team_email,ad_hoc_team_name,null);
       return new_ad_hoc_team;
    }// End of addAdHocTeam()
 
@@ -516,8 +546,8 @@ public class booksCatalog {
       List<ad_hoc_teams> adHocTeams = this.entityManager.createNamedQuery("ReturnAdHocTeam",
               ad_hoc_teams.class).setParameter(1, selected_ad_hoc_team).getResultList();
       //adding the individual author to an ad hoc team
-      adHocTeams.get(0).add_individual_authors(authors.get(0));
-
+      if(adHocTeams.get(0).add_individual_authors(authors.get(0)))
+         JOptionPane.showMessageDialog( null, "Individual Author is added to an Ad Hoc Team.");
    }//End of addIndividualAuthorToAdHocTeam()
 
    /**

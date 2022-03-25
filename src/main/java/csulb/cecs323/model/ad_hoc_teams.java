@@ -52,16 +52,17 @@ public class ad_hoc_teams extends authoring_entities{
     /** Adds an individual author to an ad hoc team after checking if that instance of individual author
      *  is not part of the team currently
      * @param individual_authors an individual author instance that is going to be added to ad hoc team
+     * @return a boolean value to tell us if the publisher is added or not
      */
-    public void add_individual_authors(individual_authors individual_authors){
-            //boolean flag = false;
+    public boolean add_individual_authors(individual_authors individual_authors){
+            boolean flag = false;
             if(!(this.individual_authors.contains(individual_authors))){
                  this.individual_authors.add(individual_authors);
-                 //flag = true;
+                  flag = true;
             }
             else{
                 JOptionPane.showMessageDialog( null,"Individual Author Already in the Team.");
             }
-            //return flag;
+            return flag;
     }//End of add_individual_authors
 }//End of ad_hoc_teams class

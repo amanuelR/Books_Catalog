@@ -21,7 +21,7 @@ import javax.persistence.*;
         name="ReturnBookTitleForUpdate",
         query = "SELECT * " +
                 "FROM   BOOKS " +
-                "WHERE  TITLE <> ? ",
+                "WHERE  TITLE = ? ",
         resultClass = Books.class
 )
 public class Books {
@@ -46,9 +46,8 @@ public class Books {
 
 
     /** Getter and Setter methods for the attributes **/
-    public void setISBN(String ISBN) {
-        this.ISBN = ISBN;
-    }
+    /*We don't need a setter method for ISBN since it's a primary key */
+    /* public void setISBN(String ISBN) {this.ISBN = ISBN;} */
 
     public void setTitle(String title) {
         this.title = title;

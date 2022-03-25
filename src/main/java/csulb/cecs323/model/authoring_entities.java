@@ -45,9 +45,8 @@ public abstract class authoring_entities {
         return email;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
-    }
+    /*We don't need a setter method for ISBN since it's a primary key */
+    /* public void setEmail(String email) { this.email = email;}*/
 
     public String getName() {
         return name;
@@ -58,7 +57,7 @@ public abstract class authoring_entities {
     }
 
     /** authoring_entities's default constructor */
-    public authoring_entities() {}
+    public authoring_entities() {}//End of default constructor
 
     /**  an authoring_entities constructor that takes two parameters(attributes) */
     public authoring_entities(String email, String name) {
