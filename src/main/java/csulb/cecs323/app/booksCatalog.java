@@ -124,7 +124,7 @@ public class booksCatalog {
             List<Publishers> new_publishers = new ArrayList<Publishers>();
             new_publishers.add(booksCatalog.addPublisher());
             booksCatalog.createEntity(new_publishers);
-               booksCatalog.createEntity(new_publishers);
+               //booksCatalog.createEntity(new_publishers);
                JOptionPane.showMessageDialog( null,new_publishers.get(0).getName() + " is added to the Publishers table.");
             break;
          case "Add Book":
@@ -425,10 +425,13 @@ public class booksCatalog {
 
       //a list that holds all the current Books objects that are in our database
       // except the one that has the same title as the book we are trying to update
+
       List<Books> book_exists = this.entityManager.createNamedQuery("ReturnBookTitleForUpdate",
               Books.class).setParameter(1, title).getResultList();
       //Check if there is a book with the title that the user is inputting
 
+      if(book_exists.get(0).getISBN() == booksList.get(0).getISBN())
+         book_exists.clear();
 
       while (!book_exists.isEmpty()) {
             title = JOptionPane.showInputDialog("Already Exists, Try Another Title: ");
